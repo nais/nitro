@@ -12,13 +12,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func ParseVars(cluster, identity string, hosts map[string][]string, ghcr_user, ghcr_password string) map[string]string {
+func ParseVars(cluster, identity string, hosts map[string][]string) map[string]string {
 	vars := ParseStringYAML("vars/" + cluster + ".yaml") // read cluster-specific vars
 	vars["users"] = BuildUsersString(ParseStringYAML("vars/admins.yaml"))
 	vars["identity_file"] = identity
 	vars["cluster_name"] = cluster
-	vars["ghcr_user"] = ghcr_user
-	vars["ghcr_password"] = ghcr_password
 
 	additionalVars := resolveRuntimeVars(hosts)
 

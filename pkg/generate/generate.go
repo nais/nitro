@@ -20,7 +20,7 @@ import (
 
 const OutputDir = "./output"
 
-func ClusterIgnitionFiles(identityFile, cluster string, hosts []string, ghcrUser, ghcrPassword string) {
+func ClusterIgnitionFiles(identityFile, cluster string, hosts []string) {
 	err := os.RemoveAll(OutputDir)
 	if err != nil {
 		log.WithError(err).Fatal("deleting output dir")
@@ -29,7 +29,7 @@ func ClusterIgnitionFiles(identityFile, cluster string, hosts []string, ghcrUser
 
 	clusterFile := vars.ParseSliceYAML("clusters/" + cluster + ".yaml")
 
-	variables := vars.ParseVars(cluster, identityFile, clusterFile, ghcrUser, ghcrPassword)
+	variables := vars.ParseVars(cluster, identityFile, clusterFile)
 	templating.TemplateFiles("templates", "output", variables, false)
 	for role, roleNodes := range clusterFile {
 		for _, node := range roleNodes {
@@ -44,11 +44,6 @@ func ClusterIgnitionFiles(identityFile, cluster string, hosts []string, ghcrUser
 			templateDir := role
 			if role == "prometheus" {
 				templateDir = "worker"
-			}
-
-			if role == "pull_through_cache" {
-				variables["ghcr_user"] = ghcrUser
-				variables["ghcr_password"] = ghcrPassword
 			}
 
 			templating.TemplateFiles(path.Join("templates", templateDir), nodeDir, variables, true)

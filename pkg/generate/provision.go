@@ -96,7 +96,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 }
 
 func roleOrder() []string {
-	return []string{"pull_through_cache", "etcd", "apiserver", "worker", "prometheus"}
+	return []string{"etcd", "apiserver", "worker", "prometheus"}
 }
 
 func PrepareForReboot(host string, client *ssh.Client) error {

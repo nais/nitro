@@ -21,8 +21,6 @@ import (
 var cfg struct {
 	cluster        string
 	identityFile   string
-	ghcrUser       string
-	ghcrPassword   string
 	hosts          []string
 	skipDrain      bool
 	maxParallelism int
@@ -36,8 +34,6 @@ func init() {
 	flag.StringSliceVar(&cfg.hosts, "hosts", nil, "limit provisioning to specific hosts (delimiter ',').")
 	flag.StringVar(&cfg.cluster, "cluster", "", "which cluster to perform actions")
 	flag.StringVar(&cfg.identityFile, "identity-file", "./id_deployer_rsa", "identity file for nodes")
-	flag.StringVar(&cfg.ghcrUser, "ghcr-user", "", "ghcr username")
-	flag.StringVar(&cfg.ghcrPassword, "ghcr-password", "", "ghcr password")
 	flag.BoolVar(&cfg.skipDrain, "skipDrain", false, "run without setting NoExecute taint and NoSchedule on nodes")
 	flag.IntVar(&cfg.maxParallelism, "maxParallelism", 2, "max number of parallel nodes for provisioning")
 }
@@ -60,7 +56,7 @@ func main() {
 	log.Infof("nais ignition template resolver onprem [operation: %s, cluster: %s]", command, cfg.cluster)
 
 	if command == "generate" {
-		generate.ClusterIgnitionFiles(cfg.identityFile, cfg.cluster, cfg.hosts, cfg.ghcrUser, cfg.ghcrPassword)
+		generate.ClusterIgnitionFiles(cfg.identityFile, cfg.cluster, cfg.hosts)
 	}
 
 	if command == "analyze" {
