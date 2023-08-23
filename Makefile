@@ -18,4 +18,3 @@ release-linux:
 	GOOS=linux \
 	GOARCH=amd64 \
 	go build -o nitro-linux -ldflags="-s -w $(LDFLAGS)" "cmd/provision/main.go"
-	go build -o nitro-runner-linux -ldflags="-s -w $(LDFLAGS)" "cmd/provision/runner/main.go"
