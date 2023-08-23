@@ -1,0 +1,10 @@
+apiserver:
+  - apiserver.domain.local
+etcd:
+  - etcd1.domain.local
+  - etcd2.domain.local
+  - etcd3.domain.local
+worker:
+  - worker1.domain.local
+  - worker2.domain.local
+  - worker3.domain.local

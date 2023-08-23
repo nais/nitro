@@ -1,0 +1,18 @@
+cluster_dns: 10.254.0.54
+cni_plugins_version: 1.2.3 # https://github.com/containernetworking/plugins/releases
+coredns_version: 1.2.3 # https://github.com/coredns/coredns/releases
+default_no_proxy: localhost,127.0.0.1,.svc,.local
+domain: domain.com
+etcd_version: v1.2.3
+flannel_cni_plugin_version: 1.2.3 # https://github.com/flannel-io/cni-plugin/releases
+flannel_version: 1.2.3 # https://github.com/flannel-io/flannel/releases
+k8s_version: v1.2.3 # https://kubernetes.io/releases/
+node_exporter_version: 1.2.3
+ntp_servers: "ntp1.domain.com, ntp2.domain.com"
+oidc_client_id: spn:<id>
+oidc_groups_claim: groups
+oidc_issuer_url: https://sts.windows.net/<id>/
+oidc_username_claim: upn
+pod_network_cidr: 192.168.0.0/16
+service_cidr: 10.254.0.0/16
+web_proxy: "http://proxy.com"
