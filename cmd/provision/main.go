@@ -63,7 +63,7 @@ func main() {
 
 	if command == "analyze" {
 		clusterFile := vars.ParseSliceYAML("clusters/" + cfg.cluster + ".yaml")
-		roleHosts := calculateHosts(clusterFile, cfg.identityFile, "output")
+		roleHosts := calculateHosts(clusterFile, cfg.user, cfg.identityFile, "output")
 		changes := []string{fmt.Sprintf("## %s\n", cfg.cluster)}
 		for role, hosts := range roleHosts {
 			for _, host := range hosts {
