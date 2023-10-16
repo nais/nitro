@@ -80,7 +80,7 @@ func main() {
 
 	if command == "provision" {
 		clusterFile := vars.ParseSliceYAML("clusters/" + cfg.cluster + ".yaml")
-		hosts := calculateHosts(clusterFile, cfg.identityFile, "output")
+		hosts := calculateHosts(clusterFile, cfg.user, cfg.identityFile, "output")
 		if hosts == nil {
 			log.Infof("no hosts to provision. exiting")
 			os.Exit(0)
