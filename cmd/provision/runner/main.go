@@ -56,7 +56,7 @@ func main() {
 	nodesFile := vars.ParseSliceYAML("clusters/" + flags.cluster + ".yaml")
 	apiServer := nodesFile["apiserver"][0]
 
-	generate.RunnerConfig(flags.node, flags.cluster, apiServer, flags.identityFile, flags.githubToken, flags.repository)
+	generate.RunnerConfig(flags.node, flags.cluster, apiServer, sshClient, flags.githubToken, flags.repository)
 
 	err := provision(sshClient, flags.node)
 	if err != nil {

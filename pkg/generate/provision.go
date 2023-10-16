@@ -15,12 +15,11 @@ import (
 	"github.com/sourcegraph/conc/pool"
 )
 
-func Provision(identityFile, user, clusterName string, nodes map[string][]string, skipDrain bool, maxConcurrency int) {
+func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]string, skipDrain bool, maxConcurrency int) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
 	k := kubernetes.New(clusterName)
-	sshClient := ssh.New(user, identityFile)
 
 	wg := pool.New().WithMaxGoroutines(maxConcurrency).WithContext(ctx)
 	nodeCount := maxConcurrency

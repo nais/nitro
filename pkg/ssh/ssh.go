@@ -14,8 +14,9 @@ import (
 )
 
 type Client struct {
-	auth goph.Auth
-	user string
+	auth         goph.Auth
+	identityFile string
+	user         string
 }
 
 func New(user, privateKey string) *Client {
@@ -25,13 +26,18 @@ func New(user, privateKey string) *Client {
 	}
 
 	return &Client{
-		auth: auth,
-		user: user,
+		auth:         auth,
+		identityFile: privateKey,
+		user:         user,
 	}
 }
 
 func (c *Client) User() string {
 	return c.user
+}
+
+func (c *Client) IdentityFile() string {
+	return c.identityFile
 }
 
 func (c *Client) UploadFile(host, src, dst string) error {

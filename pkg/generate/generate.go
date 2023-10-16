@@ -20,7 +20,7 @@ import (
 
 const OutputDir = "./output"
 
-func ClusterIgnitionFiles(user, identityFile, cluster string, hosts []string) {
+func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string) {
 	err := os.RemoveAll(OutputDir)
 	if err != nil {
 		log.WithError(err).Fatal("deleting output dir")
@@ -29,7 +29,7 @@ func ClusterIgnitionFiles(user, identityFile, cluster string, hosts []string) {
 
 	clusterFile := vars.ParseSliceYAML("clusters/" + cluster + ".yaml")
 
-	variables := vars.ParseVars(cluster, identityFile, clusterFile)
+	variables := vars.ParseVars(cluster, sshClient.IdentityFile(), clusterFile)
 	templating.TemplateFiles("templates", "output", variables, false)
 	for role, roleNodes := range clusterFile {
 		for _, node := range roleNodes {
@@ -64,7 +64,6 @@ func ClusterIgnitionFiles(user, identityFile, cluster string, hosts []string) {
 	filtered := utils.FilterHosts(clusterFile, hosts)
 	apiServerHost := filtered["apiserver"][0]
 	caDir := "output/" + apiServerHost
-	sshClient := ssh.New(user, identityFile)
 	ensureApiserverCerts(apiServerHost, sshClient)
 	ensureKubeletCerts(merge(filtered["worker"], filtered["prometheus"]), caDir, sshClient)
 	ensureEtcdCerts(filtered["etcd"], caDir, sshClient)

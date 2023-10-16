@@ -57,17 +57,19 @@ func main() {
 
 	log.Infof("nais ignition template resolver onprem [operation: %s, cluster: %s]", command, cfg.cluster)
 
+	sshClient := ssh.New(cfg.user, cfg.identityFile)
+
 	if command == "generate" {
-		generate.ClusterIgnitionFiles(cfg.user, cfg.identityFile, cfg.cluster, cfg.hosts)
+		generate.ClusterIgnitionFiles(sshClient, cfg.cluster, cfg.hosts)
 	}
 
 	if command == "analyze" {
 		clusterFile := vars.ParseSliceYAML("clusters/" + cfg.cluster + ".yaml")
-		roleHosts := calculateHosts(clusterFile, cfg.user, cfg.identityFile, "output")
+		roleHosts := calculateHosts(clusterFile, sshClient, "output")
 		changes := []string{fmt.Sprintf("## %s\n", cfg.cluster)}
 		for role, hosts := range roleHosts {
 			for _, host := range hosts {
-				diff := analyze.Analyze(cfg.user, cfg.identityFile, host)
+				diff := analyze.Analyze(sshClient, host)
 				changes = append(changes, fmt.Sprintf("### %s - %s\n%s\n", role, host, diff))
 			}
 		}
@@ -80,26 +82,25 @@ func main() {
 
 	if command == "provision" {
 		clusterFile := vars.ParseSliceYAML("clusters/" + cfg.cluster + ".yaml")
-		hosts := calculateHosts(clusterFile, cfg.user, cfg.identityFile, "output")
+		hosts := calculateHosts(clusterFile, sshClient, "output")
 		if hosts == nil {
 			log.Infof("no hosts to provision. exiting")
 			os.Exit(0)
 		}
 
-		generate.Provision(cfg.identityFile, cfg.user, cfg.cluster, hosts, cfg.skipDrain, cfg.maxParallelism)
+		generate.Provision(sshClient, cfg.cluster, hosts, cfg.skipDrain, cfg.maxParallelism)
 	}
 }
 
-func calculateHosts(clusterFile map[string][]string, user, sshKey, outputDir string) map[string][]string {
+func calculateHosts(clusterFile map[string][]string, sshClient *ssh.Client, outputDir string) map[string][]string {
 	log.Infof("checking which nodes has changes...")
 	if cfg.hosts != nil {
 		return utils.FilterHosts(clusterFile, cfg.hosts)
 	}
-	client := ssh.New(user, sshKey)
 
 	var nodes []string
 	for _, host := range utils.Hostnames(clusterFile) {
-		current, err := client.ExecuteCommandWithOutput(host, "sudo sha256sum /usr/share/oem/config.ign")
+		current, err := sshClient.ExecuteCommandWithOutput(host, "sudo sha256sum /usr/share/oem/config.ign")
 		if err != nil {
 			log.WithError(err).Fatalf("getting checksum of current ignition file for host %s", host)
 		}

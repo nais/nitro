@@ -18,12 +18,10 @@ const (
 	remoteIgnitionFile = "config.ign.remote.yaml"
 )
 
-func Analyze(user, identityFile, host string) string {
+func Analyze(sshClient *ssh.Client, host string) string {
 	localIgnitionFile := readFileBytes(fmt.Sprintf("output/%s/config.ign", host))
 
-	client := ssh.New(user, identityFile)
-
-	client.DownloadFile(host, path.Join("output", host, remoteIgnitionFile), "/usr/share/oem/config.ign")
+	sshClient.DownloadFile(host, path.Join("output", host, remoteIgnitionFile), "/usr/share/oem/config.ign")
 
 	remoteIgnitionFile := readFileBytes(fmt.Sprintf("output/%s/%s", host, remoteIgnitionFile))
 
