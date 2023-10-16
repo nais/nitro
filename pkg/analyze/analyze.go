@@ -3,7 +3,7 @@ package analyze
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path"
 	"strings"
@@ -54,11 +54,12 @@ func buildMarkdownTable(changelog diff.Changelog) string {
 	stringBuilder.WriteString("| :---: | :--- | :--- |\n")
 
 	for _, change := range changelog {
-		if change.Type == diff.DELETE {
+		switch change.Type {
+		case diff.DELETE:
 			stringBuilder.WriteString(fmt.Sprintf("| %s | %s | %s |\n", change.Type, strings.Join(change.Path, "."), change.From))
-		} else if change.Type == diff.CREATE {
+		case diff.CREATE:
 			stringBuilder.WriteString(fmt.Sprintf("| %s | %s | %s |\n", change.Type, strings.Join(change.Path, "."), change.To))
-		} else {
+		default:
 			stringBuilder.WriteString(fmt.Sprintf("| %s | %s | %s |\n| | | %s |\n", change.Type, strings.Join(change.Path, "."), change.From, change.To))
 		}
 	}
@@ -78,7 +79,7 @@ func readFileBytes(filePath string) []byte {
 		}
 	}(file)
 
-	byteSlice, err := ioutil.ReadAll(file)
+	byteSlice, err := io.ReadAll(file)
 	if err != nil {
 		log.WithError(err).Fatal("read file")
 	}
