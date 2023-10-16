@@ -21,6 +21,7 @@ import (
 var cfg struct {
 	cluster        string
 	identityFile   string
+	user           string
 	hosts          []string
 	skipDrain      bool
 	maxParallelism int
@@ -34,6 +35,7 @@ func init() {
 	flag.StringSliceVar(&cfg.hosts, "hosts", nil, "limit provisioning to specific hosts (delimiter ',').")
 	flag.StringVar(&cfg.cluster, "cluster", "", "which cluster to perform actions")
 	flag.StringVar(&cfg.identityFile, "identity-file", "./id_deployer_rsa", "identity file for nodes")
+	flag.StringVar(&cfg.user, "user", "deployer", "user to use for ssh")
 	flag.BoolVar(&cfg.skipDrain, "skipDrain", false, "run without setting NoExecute taint and NoSchedule on nodes")
 	flag.IntVar(&cfg.maxParallelism, "maxParallelism", 2, "max number of parallel nodes for provisioning")
 }
@@ -84,7 +86,7 @@ func main() {
 			os.Exit(0)
 		}
 
-		generate.Provision(cfg.identityFile, cfg.cluster, hosts, cfg.skipDrain, cfg.maxParallelism)
+		generate.Provision(cfg.identityFile, cfg.user, cfg.cluster, hosts, cfg.skipDrain, cfg.maxParallelism)
 	}
 }
 
