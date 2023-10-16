@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func RunnerConfig(node, cluster, apiServer, identityFile string, githubToken, repository string) {
+func RunnerConfig(node, cluster, apiServer, user, identityFile string, githubToken, repository string) {
 	log.Infof("generate runner config %s\n", node)
 
 	err := os.RemoveAll("./output")
@@ -37,7 +37,7 @@ func RunnerConfig(node, cluster, apiServer, identityFile string, githubToken, re
 	templating.TemplateFiles("templates", "output", variables, false)
 
 	log.Infof("download files from API server")
-	sshClient := ssh.New("deployer", identityFile)
+	sshClient := ssh.New(user, identityFile)
 	if err := sshClient.DownloadDir(apiServer, "output/"+node, "/etc/kubernetes/pki"); err != nil {
 		log.Infof("could not download files from apiserver: %v", err)
 	}

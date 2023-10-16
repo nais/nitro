@@ -16,6 +16,7 @@ type cfg struct {
 	cluster      string
 	repository   string
 	githubToken  string
+	user         string
 	identityFile string
 }
 
@@ -26,6 +27,7 @@ func parseFlags() *cfg {
 	flag.StringVar(&cfg.cluster, "cluster", "", "kubernetes cluster")
 	flag.StringVar(&cfg.repository, "repository", "", "github repository")
 	flag.StringVar(&cfg.githubToken, "github-token", "", "provide github for provisioning github runners")
+	flag.StringVar(&cfg.user, "user", "deployer", "user to use for ssh")
 	flag.StringVar(&cfg.identityFile, "identity-file", "./id_deployer_rsa", "identity file for nodes")
 	flag.Parse()
 
@@ -49,7 +51,7 @@ func main() {
 		FullTimestamp: true,
 	})
 
-	sshClient := ssh.New("deployer", flags.identityFile)
+	sshClient := ssh.New(flags.user, flags.identityFile)
 
 	nodesFile := vars.ParseSliceYAML("clusters/" + flags.cluster + ".yaml")
 	apiServer := nodesFile["apiserver"][0]
@@ -65,7 +67,7 @@ func main() {
 
 func provision(client *ssh.Client, runner string) error {
 	log.Infof("copy ignition file to runner %s", runner)
-	err := client.UploadFile(runner, filepath.Join("output", runner, "config.ign"), "/home/deployer/config.ign")
+	err := client.UploadFile(runner, filepath.Join("output", runner, "config.ign"), "/home/"+client.User()+"/config.ign")
 	if err != nil {
 		return err
 	}

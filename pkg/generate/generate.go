@@ -20,7 +20,7 @@ import (
 
 const OutputDir = "./output"
 
-func ClusterIgnitionFiles(identityFile, cluster string, hosts []string) {
+func ClusterIgnitionFiles(user, identityFile, cluster string, hosts []string) {
 	err := os.RemoveAll(OutputDir)
 	if err != nil {
 		log.WithError(err).Fatal("deleting output dir")
@@ -64,7 +64,7 @@ func ClusterIgnitionFiles(identityFile, cluster string, hosts []string) {
 	filtered := utils.FilterHosts(clusterFile, hosts)
 	apiServerHost := filtered["apiserver"][0]
 	caDir := "output/" + apiServerHost
-	sshClient := ssh.New("deployer", identityFile)
+	sshClient := ssh.New(user, identityFile)
 	ensureApiserverCerts(apiServerHost, sshClient)
 	ensureKubeletCerts(merge(filtered["worker"], filtered["prometheus"]), caDir, sshClient)
 	ensureEtcdCerts(filtered["etcd"], caDir, sshClient)
@@ -111,14 +111,12 @@ func recursiveGrep(root string, str string) []string {
 
 func search(file string, s string) (hits []int) {
 	f, err := os.Open(file)
-
 	if err != nil {
 		log.WithError(err).Fatal("opening file")
 	}
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-
 		}
 	}(f)
 

@@ -58,7 +58,7 @@ func main() {
 	log.Infof("nais ignition template resolver onprem [operation: %s, cluster: %s]", command, cfg.cluster)
 
 	if command == "generate" {
-		generate.ClusterIgnitionFiles(cfg.identityFile, cfg.cluster, cfg.hosts)
+		generate.ClusterIgnitionFiles(cfg.user, cfg.identityFile, cfg.cluster, cfg.hosts)
 	}
 
 	if command == "analyze" {
@@ -67,7 +67,7 @@ func main() {
 		changes := []string{fmt.Sprintf("## %s\n", cfg.cluster)}
 		for role, hosts := range roleHosts {
 			for _, host := range hosts {
-				diff := analyze.Analyze(cfg.identityFile, host)
+				diff := analyze.Analyze(cfg.user, cfg.identityFile, host)
 				changes = append(changes, fmt.Sprintf("### %s - %s\n%s\n", role, host, diff))
 			}
 		}
@@ -90,12 +90,12 @@ func main() {
 	}
 }
 
-func calculateHosts(clusterFile map[string][]string, sshKey, outputDir string) map[string][]string {
+func calculateHosts(clusterFile map[string][]string, user, sshKey, outputDir string) map[string][]string {
 	log.Infof("checking which nodes has changes...")
 	if cfg.hosts != nil {
 		return utils.FilterHosts(clusterFile, cfg.hosts)
 	}
-	client := ssh.New("deployer", sshKey)
+	client := ssh.New(user, sshKey)
 
 	var nodes []string
 	for _, host := range utils.Hostnames(clusterFile) {

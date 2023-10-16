@@ -30,6 +30,10 @@ func New(user, privateKey string) *Client {
 	}
 }
 
+func (c *Client) User() string {
+	return c.user
+}
+
 func (c *Client) UploadFile(host, src, dst string) error {
 	ip := vars.ResolveIP(host)
 	client, err := goph.NewUnknown(c.user, ip, c.auth)

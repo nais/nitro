@@ -61,7 +61,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 		k.DeleteNode(ctx, node)
 	}
 
-	if err := sshClient.UploadFile(node, filepath.Join("output", node, "config.ign"), "/home/deployer/config.ign"); err != nil {
+	if err := sshClient.UploadFile(node, filepath.Join("output", node, "config.ign"), "/home/"+sshClient.User()+"/config.ign"); err != nil {
 		log.WithError(err).Fatal("uploading ignition config")
 	}
 
@@ -100,10 +100,10 @@ func roleOrder() []string {
 }
 
 func PrepareForReboot(host string, client *ssh.Client) error {
-	cmd := fmt.Sprintf(`sudo mv /home/deployer/config.ign %s \
+	cmd := fmt.Sprintf(`sudo mv /home/%s/config.ign /usr/share/oem/config.ign \
 	&& sudo mkdir -p /boot/flatcar \
     && sudo touch /boot/flatcar/first_boot \
-	&& sudo rm -f /etc/machine-id`, "/usr/share/oem/config.ign")
+	&& sudo rm -f /etc/machine-id`, client.User())
 
 	return client.ExecuteCommand(host, cmd)
 }
