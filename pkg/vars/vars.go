@@ -12,7 +12,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func ParseVars(cluster, identity string, hosts map[string][]string) map[string]string {
+type Node struct {
+	Hostname string `yaml:"name"`
+	Location string `yaml:"location"`
+}
+
+func ParseVars(cluster, identity string, hosts map[string][]Node) map[string]string {
 	vars := ParseStringYAML("vars/" + cluster + ".yaml") // read cluster-specific vars
 	vars["users"] = BuildUsersString(ParseStringYAML("vars/admins.yaml"))
 	vars["identity_file"] = identity
@@ -23,13 +28,20 @@ func ParseVars(cluster, identity string, hosts map[string][]string) map[string]s
 	return Merge(vars, additionalVars)
 }
 
-func resolveRuntimeVars(hosts map[string][]string) map[string]string {
-	noProxyIPs := resolveIPs(append(hosts["worker"], hosts["prometheus"]...))
+func resolveRuntimeVars(hosts map[string][]Node) map[string]string {
+	nodes := make(map[string][]string)
+	for _, node := range hosts["worker"] {
+		nodes["worker"] = append(nodes["worker"], node.Hostname)
+	}
+	for _, node := range hosts["etcd"] {
+		nodes["etcd"] = append(nodes["etcd"], node.Hostname)
+	}
+	noProxyIPs := resolveIPs(append(nodes["worker"], nodes["prometheus"]...))
 
 	var etcdIPList []string
 	var etcdUrls []string
 	var etcdInitialCluster []string
-	for _, etcdUrl := range hosts["etcd"] {
+	for _, etcdUrl := range nodes["etcd"] {
 		etcdUrls = append(etcdUrls, "https://"+etcdUrl+":2379")
 		etcdServerShort := strings.Split(etcdUrl, ".")[0]
 		ip := ResolveIP(etcdUrl)
@@ -40,10 +52,10 @@ func resolveRuntimeVars(hosts map[string][]string) map[string]string {
 	}
 
 	vars := make(map[string]string)
-	vars["apiserver"] = hosts["apiserver"][0]
-	vars["apiserver_ip"] = ResolveIP(hosts["apiserver"][0])
+	vars["apiserver"] = nodes["apiserver"][0]
+	vars["apiserver_ip"] = ResolveIP(nodes["apiserver"][0])
 	vars["worker_ips"] = strings.Join(noProxyIPs, ",")
-	vars["etcd_hostnames"] = strings.Join(hosts["etcd"], "\",\n\"")
+	vars["etcd_hostnames"] = strings.Join(nodes["etcd"], "\",\n\"")
 	vars["etcd_ips"] = strings.Join(etcdIPList, "\",\n\"")
 	vars["etcd_initial_cluster"] = strings.Join(etcdInitialCluster, ",")
 	vars["etcd_urls"] = strings.Join(etcdUrls, ",")
@@ -59,6 +71,21 @@ func ParseStringYAML(file string) map[string]string {
 	}
 
 	vars := make(map[string]string)
+	err = yaml.Unmarshal(f, &vars)
+	if err != nil {
+		log.WithError(err).Fatalf("unmarshalling yaml file: %s", file)
+	}
+
+	return vars
+}
+
+func ParseClusterYAML(file string) map[string][]Node {
+	f, err := os.ReadFile(file)
+	if err != nil {
+		log.WithError(err).Fatalf("reading yaml file: %s", file)
+	}
+
+	vars := make(map[string][]Node)
 	err = yaml.Unmarshal(f, &vars)
 	if err != nil {
 		log.WithError(err).Fatalf("unmarshalling yaml file: %s", file)
