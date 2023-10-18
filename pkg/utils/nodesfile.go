@@ -1,22 +1,25 @@
 package utils
 
-func FilterHosts(nodeConfig map[string][]string, nodes []string) map[string][]string {
+import "github.com/nais/onprem/nitro/pkg/vars"
+
+func FilterHosts(nodeConfig map[string][]vars.Node,
+	nodes []string) map[string][]vars.Node {
 	if nodes == nil {
 		return nodeConfig
 	}
 
-	ret := make(map[string][]string)
+	ret := make(map[string][]vars.Node)
 
 	for _, n := range nodes {
 		role := getRole(n, nodeConfig)
-		ret[role] = append(ret[role], n)
+		ret[role] = append(ret[role], nodeConfig[role])
 	}
-
 	return ret
 }
 
-func getRole(node string, nodeConfig map[string][]string) string {
-	for role, nodes := range nodeConfig {
+// Role as in Etcd, Apiserver, worker, etc
+func getRole(node string, nodeConfig map[string][]vars.Node) string {
+	for role, nodes := range vars.ForgetLocation(nodeConfig) {
 		if Contains(node, nodes) {
 			return role
 		}

@@ -8,6 +8,7 @@ import (
 	"github.com/nais/onprem/nitro/pkg/cert"
 	"github.com/nais/onprem/nitro/pkg/ssh"
 	"github.com/nais/onprem/nitro/pkg/utils"
+	"github.com/nais/onprem/nitro/pkg/vars"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,14 +31,14 @@ func ensureKubeletCert(hostname, caDir string, ssh *ssh.Client) {
 	log.Infof("ensured kubelet certificate for node %s", hostname)
 }
 
-func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
+func ensureEtcdCerts(hosts []vars.Node, apiServerDir string, ssh *ssh.Client) {
 	for _, host := range hosts {
-		workingDir := "output/" + host
-		if err := ssh.DownloadDir(host, apiServerDir, "/etc/ssl/etcd/"); err != nil {
+		workingDir := "output/" + host.Hostname
+		if err := ssh.DownloadDir(host.Hostname, apiServerDir, "/etc/ssl/etcd/"); err != nil {
 			log.Infof("could not download files from apiserver: %v", err)
 		}
 
-		shortname := strings.Split(host, ".")[0]
+		shortname := strings.Split(host.Hostname, ".")[0]
 		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "peer-"+shortname, "peer")
 		}

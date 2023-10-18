@@ -17,6 +17,20 @@ type Node struct {
 	Location string `yaml:"location"`
 }
 
+func ForgetLocation(cluster map[string][]Node) map[string][]string {
+	result := make(map[string][]string)
+
+	for key, nodes := range cluster {
+		hostnames := make([]string, len(nodes))
+		for i, node := range nodes {
+			hostnames[i] = node.Hostname
+		}
+		result[key] = hostnames
+	}
+
+	return result
+}
+
 func ParseVars(cluster, identity string, hosts map[string][]Node) map[string]string {
 	vars := ParseStringYAML("vars/" + cluster + ".yaml") // read cluster-specific vars
 	vars["users"] = BuildUsersString(ParseStringYAML("vars/admins.yaml"))

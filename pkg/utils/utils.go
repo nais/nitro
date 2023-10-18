@@ -3,12 +3,13 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"github.com/nais/onprem/nitro/pkg/vars"
 	"os"
 	"path/filepath"
 )
 
-func Hostnames(clusterFile map[string][]string) (ret []string) {
-	for _, hosts := range clusterFile {
+func Hostnames(clusterFile map[string][]vars.Node) (ret []string) {
+	for _, hosts := range vars.ForgetLocation(clusterFile) {
 		ret = append(ret, hosts...)
 	}
 	return ret

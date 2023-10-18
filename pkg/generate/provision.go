@@ -3,6 +3,7 @@ package generate
 import (
 	"context"
 	"fmt"
+	"github.com/nais/onprem/nitro/pkg/vars"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -15,7 +16,7 @@ import (
 	"github.com/sourcegraph/conc/pool"
 )
 
-func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]string, skipDrain bool, maxConcurrency int) {
+func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]vars.Node, skipDrain bool, maxConcurrency int) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
@@ -34,11 +35,11 @@ func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]str
 					nodeCount--
 				}
 				wg.Go(func(ctx context.Context) error {
-					provision(ctx, role, node, k, sshClient, skipDrain)
+					provision(ctx, role, node.Hostname, k, sshClient, skipDrain)
 					return nil
 				})
 			} else {
-				provision(ctx, role, node, k, sshClient, skipDrain)
+				provision(ctx, role, node.Hostname, k, sshClient, skipDrain)
 			}
 		}
 	}

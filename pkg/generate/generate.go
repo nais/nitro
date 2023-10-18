@@ -64,8 +64,8 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	log.Infof("ensuring certificates")
 	filtered := utils.FilterHosts(clusterFile, hosts)
 	apiServerHost := filtered["apiserver"][0]
-	caDir := "output/" + apiServerHost
-	ensureApiserverCerts(apiServerHost, sshClient)
+	caDir := "output/" + apiServerHost.Hostname
+	ensureApiserverCerts(apiServerHost.Hostname, sshClient)
 	ensureKubeletCerts(merge(filtered["worker"], filtered["prometheus"]), caDir, sshClient)
 	ensureEtcdCerts(filtered["etcd"], caDir, sshClient)
 	log.Info("finished ensuring certificates")
@@ -80,7 +80,7 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	}
 }
 
-func merge(slices ...[]string) (ret []string) {
+func merge(slices ...[]vars.Node) (ret []vars.Node) {
 	for _, s := range slices {
 		ret = append(ret, s...)
 	}

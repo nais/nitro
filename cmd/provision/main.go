@@ -64,12 +64,12 @@ func main() {
 	}
 
 	if command == "analyze" {
-		clusterFile := vars.ParseSliceYAML("clusters/" + cfg.cluster + ".yaml")
+		clusterFile := vars.ParseClusterYAML("clusters/" + cfg.cluster + ".yaml")
 		roleHosts := calculateHosts(clusterFile, sshClient, "output")
 		changes := []string{fmt.Sprintf("## %s\n", cfg.cluster)}
 		for role, hosts := range roleHosts {
 			for _, host := range hosts {
-				diff := analyze.Analyze(sshClient, host)
+				diff := analyze.Analyze(sshClient, host.Hostname)
 				changes = append(changes, fmt.Sprintf("### %s - %s\n%s\n", role, host, diff))
 			}
 		}
@@ -81,7 +81,7 @@ func main() {
 	}
 
 	if command == "provision" {
-		clusterFile := vars.ParseSliceYAML("clusters/" + cfg.cluster + ".yaml")
+		clusterFile := vars.ParseClusterYAML("clusters/" + cfg.cluster + ".yaml")
 		hosts := calculateHosts(clusterFile, sshClient, "output")
 		if hosts == nil {
 			log.Infof("no hosts to provision. exiting")
@@ -92,7 +92,7 @@ func main() {
 	}
 }
 
-func calculateHosts(clusterFile map[string][]string, sshClient *ssh.Client, outputDir string) map[string][]string {
+func calculateHosts(clusterFile map[string][]vars.Node, sshClient *ssh.Client, outputDir string) map[string][]vars.Node {
 	log.Infof("checking which nodes has changes...")
 	if cfg.hosts != nil {
 		return utils.FilterHosts(clusterFile, cfg.hosts)
