@@ -23,7 +23,7 @@ func TestForgetLocation(t *testing.T) {
 		"group2": {"node3", "node4", "node5"},
 	}
 
-	result := ForgetLocation(cluster)
+	result := GetHostname(cluster)
 
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Unexpected result. Expected: %v, but got: %v", expectedResult, result)
@@ -35,7 +35,7 @@ func TestForgetLocation_EmptyCluster(t *testing.T) {
 
 	expectedResult := map[string][]string{}
 
-	result := ForgetLocation(cluster)
+	result := GetHostname(cluster)
 
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Unexpected result. Expected: %v, but got: %v", expectedResult, result)

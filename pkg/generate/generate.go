@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -39,6 +40,7 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 			variables["role"] = role
 			variables["location"] = node.Location
 			variables["hostname"] = node.Hostname
+			variables["webproxy"] = strconv.FormatBool(node.WebproxyEnabled())
 			variables["hostname_short"] = strings.Split(node.Hostname, ".")[0]
 			variables["hostname_ip"] = vars.ResolveIP(node.Hostname)
 

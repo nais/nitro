@@ -12,10 +12,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ensureKubeletCerts(hosts []string, caDir string, ssh *ssh.Client) {
+func ensureKubeletCerts(hosts []vars.Node, caDir string, ssh *ssh.Client) {
 	log.Info("ensuring kubelet certs")
 	for _, host := range hosts {
-		ensureKubeletCert(host, caDir, ssh)
+		ensureKubeletCert(host.Hostname, caDir, ssh)
 	}
 }
 

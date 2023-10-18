@@ -3,7 +3,6 @@ package generate
 import (
 	"context"
 	"fmt"
-	"github.com/nais/onprem/nitro/pkg/vars"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/nais/onprem/nitro/pkg/kubernetes"
 	"github.com/nais/onprem/nitro/pkg/ssh"
+	"github.com/nais/onprem/nitro/pkg/vars"
 	log "github.com/sirupsen/logrus"
 	"github.com/sourcegraph/conc/pool"
 )

@@ -17,7 +17,11 @@ type Node struct {
 	Location string `yaml:"location"`
 }
 
-func ForgetLocation(cluster map[string][]Node) map[string][]string {
+func (node Node) WebproxyEnabled() bool {
+	return node.Location == "azure"
+
+}
+func GetHostname(cluster map[string][]Node) map[string][]string {
 	result := make(map[string][]string)
 
 	for key, nodes := range cluster {
