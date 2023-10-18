@@ -82,6 +82,26 @@ func ParseSliceYAML(file string) map[string][]string {
 	return vars
 }
 
+type Node struct {
+	Hostname string `yaml:"hostname"`
+	Location string `yaml:"location"`
+}
+
+func ParseClusterYAML(file string) map[string][]Node {
+	f, err := os.ReadFile(file)
+	if err != nil {
+		log.WithError(err).Fatalf("reading yaml file: %s", file)
+	}
+
+	vars := make(map[string][]Node)
+	err = yaml.Unmarshal(f, &vars)
+	if err != nil {
+		log.WithError(err).Fatalf("unmarshalling yaml file: %s", file)
+	}
+
+	return vars
+}
+
 func resolveIPs(hostnames []string) []string {
 	var ips []string
 	for _, hostname := range hostnames {
