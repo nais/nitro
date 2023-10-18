@@ -74,6 +74,33 @@ func ParseSliceYAML(file string) map[string][]string {
 	}
 
 	vars := make(map[string][]string)
+	varsNode := make(map[string][]Node)
+	err = yaml.Unmarshal(f, &varsNode)
+	if err != nil {
+		log.WithError(err).Fatalf("unmarshalling yaml file: %s", file)
+	}
+
+	for key, value := range varsNode {
+		for _, node := range value {
+			vars[key] = append(vars[key], node.Hostname)
+		}
+	}
+
+	return vars
+}
+
+type Node struct {
+	Hostname string `yaml:"hostname"`
+	Location string `yaml:"location"`
+}
+
+func ParseClusterYAML(file string) map[string][]Node {
+	f, err := os.ReadFile(file)
+	if err != nil {
+		log.WithError(err).Fatalf("reading yaml file: %s", file)
+	}
+
+	vars := make(map[string][]Node)
 	err = yaml.Unmarshal(f, &vars)
 	if err != nil {
 		log.WithError(err).Fatalf("unmarshalling yaml file: %s", file)

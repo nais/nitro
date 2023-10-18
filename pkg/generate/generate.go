@@ -28,18 +28,19 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	log.Infof("deleted dir: %s", OutputDir)
 
 	clusterFile := vars.ParseSliceYAML("clusters/" + cluster + ".yaml")
+	clusterWithLocation := vars.ParseClusterYAML("clusters/" + cluster + ".yaml")
 
 	variables := vars.ParseVars(cluster, sshClient.IdentityFile(), clusterFile)
 	templating.TemplateFiles("templates", "output", variables, false)
-	for role, roleNodes := range clusterFile {
+	for role, roleNodes := range clusterWithLocation {
 		for _, node := range roleNodes {
 			log.Infof("templating files for %s node %s\n", role, node)
-			nodeDir := "output/" + node
-
+			nodeDir := "output/" + node.Hostname
+			variables["location"] = node.Location
 			variables["role"] = role
-			variables["hostname"] = node
-			variables["hostname_short"] = strings.Split(node, ".")[0]
-			variables["hostname_ip"] = vars.ResolveIP(node)
+			variables["hostname"] = node.Hostname
+			variables["hostname_short"] = strings.Split(node.Hostname, ".")[0]
+			variables["hostname_ip"] = vars.ResolveIP(node.Hostname)
 
 			templateDir := role
 			if role == "prometheus" {

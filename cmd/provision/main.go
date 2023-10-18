@@ -55,7 +55,7 @@ func main() {
 
 	setupLogging()
 
-	log.Infof("nais ignition template resolver onprem [operation: %s, cluster: %s]", command, cfg.cluster)
+	log.Infof("nais ignition template resolver [operation: %s, cluster: %s]", command, cfg.cluster)
 
 	sshClient := ssh.New(cfg.user, cfg.identityFile)
 
@@ -105,7 +105,6 @@ func calculateHosts(clusterFile map[string][]string, sshClient *ssh.Client, outp
 
 		ok, _ := sshClient.ExecuteCommandWithOutput(host, "sudo test -e  /usr/share/oem/config.ign && echo exists")
 		if ok == "exists" {
-
 			current, err := sshClient.ExecuteCommandWithOutput(host, "sudo sha256sum /usr/share/oem/config.ign")
 			if err != nil {
 				log.WithError(err).Fatalf("getting checksum of current ignition file for host %s@%s", sshClient.User(), host)
