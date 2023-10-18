@@ -21,6 +21,9 @@ import (
 
 const OutputDir = "./output"
 
+// TODO: this fetches the certs from the machines, thus this can't be run locally
+//
+//	this is a smell and we should really, really be able to generate without all the access rights etc
 func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string) {
 	err := os.RemoveAll(OutputDir)
 	if err != nil {
