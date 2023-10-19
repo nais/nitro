@@ -104,6 +104,7 @@ func calculateHosts(clusterFile map[string][]string, sshClient *ssh.Client, outp
 		localSum := sha256sum(outputDir + "/" + host + "/config.ign")
 
 		ok, _ := sshClient.ExecuteCommandWithOutput(host, "sudo test -e  /usr/share/oem/config.ign && echo exists")
+		log.Infof("host %s@%s: %s", sshClient.User(), host, ok)
 		if ok == "exists" {
 			current, err := sshClient.ExecuteCommandWithOutput(host, "sudo sha256sum /usr/share/oem/config.ign")
 			if err != nil {
