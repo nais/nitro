@@ -127,7 +127,6 @@ func (c *Client) ExecuteCommandWithOutput(host, command string) (string, error) 
 	}(client)
 
 	out, err := client.Run(command)
-	log.Infof("output from %s: %s", host, string(out))
 	if err != nil {
 		return "", fmt.Errorf("executing ssh ExecuteCommand: error: '%s', output: '%s'", err, string(out))
 	}
