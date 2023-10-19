@@ -103,9 +103,8 @@ func calculateHosts(clusterFile map[string][]string, sshClient *ssh.Client, outp
 		remoteSum := ""
 		localSum := sha256sum(outputDir + "/" + host + "/config.ign")
 
-		ok, _ := sshClient.ExecuteCommandWithOutput(host, "sudo test -f /usr/share/oem/config.ign")
-		log.Infof("host %s@%s: %s", sshClient.User(), host, ok)
-		if ok == "exists" {
+		ret, _ := sshClient.ExecuteCommandWithOutput(host, "sudo test -f /usr/share/oem/config.ign && echo -n 'true' || echo -n 'false'")
+		if ret == "true" {
 			current, err := sshClient.ExecuteCommandWithOutput(host, "sudo sha256sum /usr/share/oem/config.ign")
 			if err != nil {
 				log.WithError(err).Fatalf("getting checksum of current ignition file for host %s@%s", sshClient.User(), host)
