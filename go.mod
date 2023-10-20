@@ -1,6 +1,6 @@
 module github.com/nais/onprem/nitro
 
-go 1.20
+go 1.21
 
 require (
 	github.com/ajeddeloh/go-json v0.0.0-20200220154158-5ae607161559 // indirect
