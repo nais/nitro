@@ -38,9 +38,11 @@ func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
 		}
 
 		shortname := strings.Split(host, ".")[0]
-		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) {
-			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "peer-"+shortname, "peer")
-		}
+
+		// Peer certificates are always re-genereated, all nodes need to have the same config
+		// so there's no point in keeping and special casing "adding a new node"
+		cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "peer-"+shortname, "peer")
+
 		if !utils.CertificatePairExists("server", apiServerDir) {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "server", "server")
 		}
