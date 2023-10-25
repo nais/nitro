@@ -31,15 +31,24 @@ As there is no support for this in nitro, we need to do some manual patching
 along the way.
 
 1. Create the new node and add it to the cluster file
+
 2. Add member to etcd cluster from one of the existing etcd-nodes:
 ```
 etcdctl member add <nodename> --peer-urls https://<nodename>:2380
 ```
+
 3. Delete all certificates from existing etcd-nodes as they are missing the new
    node
+
 4. Run the nitro workflow
 
+5. When the workflow is done, log in to the new etcd node and delete
+   /var/lib/etcd/member and set the /etc/systemd/system/etcd.service
+   initial-cluster-state to existing restart the etcd service
+
 ### Move api-server
+
+These steps also require some amount of manual lay on hands.
 
 In order to move apiserver you will need to:
 
@@ -47,6 +56,7 @@ In order to move apiserver you will need to:
    node name of your choosing, e.g apiserver-1
 
 2. Stop the apiserver service on the original node and copy all certificates
-except the api server certificate over to the new apiserver instance.
+except the api server certificate and the apiserver kubelet certificate over to
+the new apiserver instance.
 
 3. Run the nitro workflow
