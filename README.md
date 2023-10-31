@@ -15,7 +15,46 @@ kubectl config set-context <cluster name> --user=nais-user --cluster=<cluster na
 
 7. Create workflow for provisioning. See [examples](./examples/workflow.yaml)
 
-### Add node to existing cluster
+### Add worker node to existing cluster
 1. Create a new node
-2. When the VM is up, add it to [cluster name]-nodes.yaml and push it to github. This will trigger the pipeline.
-The workflow will generate a config for the new node, push it to the VM and trigger a provision.
+
+2. When the VM is up, add it to [cluster name]-nodes.yaml and push it to github.
+This will trigger the pipeline. The workflow will generate a config for the new
+node, push it to the VM and trigger a provision.
+
+### Add etcd node to existing cluster
+
+As there is no support for this in nitro, we need to do some manual patching
+along the way.
+
+1. Create the new node and add it to the cluster file
+
+2. Add member to etcd cluster from one of the existing etcd-nodes:
+```
+etcdctl member add <nodename> --peer-urls https://<nodename>:2380
+```
+
+3. Delete all certificates from existing etcd-nodes as they are missing the new
+   node
+
+4. Run the nitro workflow
+
+5. When the workflow is done, log in to the new etcd node and delete
+   /var/lib/etcd/member and set the /etc/systemd/system/etcd.service
+   initial-cluster-state to existing restart the etcd service
+
+### Move api-server
+
+These steps also require some amount of manual lay on hands.
+
+In order to move apiserver you will need to:
+
+1. Create a new node in the cluster description with ´location: azure´ and with a
+   node name of your choosing, e.g apiserver-1
+
+2. copy all certificates from the old apiserver except the api server certificate and the
+   apiserver kubelet certificate over to the new apiserver instance.
+
+3. Delete the kubelet certificates on the worker nodes
+
+4. Run the nitro workflow, which will now reprovision the missing certificates
