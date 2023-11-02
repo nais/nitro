@@ -1,17 +1,17 @@
 apiserver:
-  - name: apiserver.domain.local
+  - hostname: apiserver.domain.local
     location: azure
 etcd:
-  - name: etcd1.domain.local
+  - hostname: etcd1.domain.local
     location: azure
-  - name: etcd2.domain.local
+  - hostname: etcd2.domain.local
     location: onprem
-  - name: etcd3.domain.local
+  - hostname: etcd3.domain.local
     location: azure
 worker:
-  - name: worker1.domain.local
+  - hostname: worker1.domain.local
     location: onprem
-  - name: worker2.domain.local
+  - hostname: worker2.domain.local
     location: azure
-  - name: worker3.domain.local
+  - hostname: worker3.domain.local
     location: azure
