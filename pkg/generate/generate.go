@@ -41,9 +41,9 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 			variables["hostname_short"] = strings.Split(node.Hostname, ".")[0]
 			variables["hostname_ip"] = vars.ResolveIP(node.Hostname)
 
-			variables["webproxy"] = "false"
+			variables["azure"] = "false"
 			if node.Location == "onprem" {
-				variables["webproxy"] = "true"
+				variables["azure"] = "true"
 			}
 
 			templateDir := role
