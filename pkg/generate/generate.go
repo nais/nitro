@@ -42,7 +42,7 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 			variables["hostname_ip"] = vars.ResolveIP(node.Hostname)
 
 			variables["azure"] = "false"
-			if node.Location == "onprem" {
+			if node.Location == "azure" {
 				variables["azure"] = "true"
 			}
 
