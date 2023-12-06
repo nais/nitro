@@ -46,7 +46,7 @@ etcdctl member add <nodename> --peer-urls https://<nodename>:2380
 ### Move api-server
 
 These steps also require some amount of manual lay on hands.
-
+Remember to add hosts to /etc/hosts on the nodes if you don't have internal DNS.
 In order to move apiserver you will need to:
 
 1. Create a new node in the cluster description with ´location: azure´ and with a
@@ -57,4 +57,8 @@ In order to move apiserver you will need to:
 
 3. Delete the kubelet certificates on the worker nodes
 
-4. Run the nitro workflow, which will now reprovision the missing certificates
+4. Replace the old apiserver with the new one in the cluster file, but leave the old one running for now
+
+5. Run the nitro workflow, which will now reprovision the missing certificates
+
+6. If successful, delete old apiserver node from the cluster

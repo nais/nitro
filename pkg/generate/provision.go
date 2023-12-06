@@ -73,19 +73,20 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 	if err := sshClient.Reboot(node); err != nil {
 		log.WithError(err).Info("start reboot")
 	}
-	/*	if role == "etcd" {
-			counter := 0
-			for !EtcdHealthy(node, sshClient) {
-				if counter < 5 {
-					counter++
-					log.Infof("etcd not healthy, sleeping for 5 seconds before rechecking")
-					time.Sleep(5 * time.Second)
-					continue
-				}
-				panic(fmt.Sprintf("etcd [%s] not healthy", node))
+
+	if role == "etcd" {
+		counter := 0
+		for !EtcdHealthy(node, sshClient) {
+			if counter < 5 {
+				counter++
+				log.Infof("etcd not healthy, sleeping for 5 seconds before rechecking")
+				time.Sleep(5 * time.Second)
+				continue
 			}
+			panic(fmt.Sprintf("etcd [%s] not healthy", node))
 		}
-	*/
+	}
+
 	if (role == "worker" || role == "prometheus") && !skipDrain {
 		k.WaitForNode(ctx, node)
 		k.LabelNode(ctx, node, "kubernetes.io/role", role)
