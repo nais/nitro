@@ -74,7 +74,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 		log.WithError(err).Info("start reboot")
 	}
 
-	if role == "etcd" && newCluster {
+	if role == "etcd" && !newCluster {
 		counter := 0
 		for !EtcdHealthy(node, sshClient) {
 			if counter < 5 {
