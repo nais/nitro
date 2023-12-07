@@ -1,0 +1,53 @@
+name: Provision <cluster>s
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "templates/**"
+      - "vars/**"
+      - "clusters/**"
+      - ".github/workflows/workflow.yaml"
+
+env:
+  SSH_IDENTITY_FILE: "../../../.ssh/id_rsa"
+
+jobs:
+  <cluster>:
+    name: provision <cluster>
+    runs-on: runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download cfssl
+        env:
+          CFSSL_VERSION: 1.6.1
+          GH_VERSION: 2.4.0
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          wget --quiet https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz
+          sudo tar xzf gh_${GH_VERSION}_linux_amd64.tar.gz -C /opt/bin --strip-components 2 gh_${GH_VERSION}_linux_amd64/bin/gh
+          wget --quiet https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssl_${CFSSL_VERSION}_linux_amd64 -O cfssl && sudo mv cfssl /opt/bin/cfssl
+          wget --quiet https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssljson_${CFSSL_VERSION}_linux_amd64 -O cfssljson && sudo mv cfssljson /opt/bin/cfssljson
+
+          gh release download --repo nais/nitro v2 -p 'nitro-linux'
+
+          sudo chmod +x /opt/bin/cfssl*
+          chmod +x ./nitro-linux
+      - name: Ensure kubectl
+        run: |
+          set +e
+          KUBECTL_VERSION=$(cat vars/runner.yaml |grep "k8s_version:.*" |cut -d" " -f2)
+          kubectl version --output json
+          if ! kubectl version --output json | jq -r .clientVersion.gitVersion | grep -q $KUBECTL_VERSION; then
+            sudo curl -L \
+            "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+            -o /opt/bin/kubectl
+          fi
+          sudo chmod +x /opt/bin/kubectl
+      - name: Run nitro generate and provision for <cluster>
+        id: generate_and_provision
+        run: |
+          export KUBECONFIG=~/.kube/config
+          ./nitro-linux generate --identity-file=${{ env.SSH_IDENTITY_FILE }} --cluster <cluster>
+          ./nitro-linux provision --identity-file=${{ env.SSH_IDENTITY_FILE }} --cluster <cluster> --maxParallelism 1
