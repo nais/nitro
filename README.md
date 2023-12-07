@@ -13,7 +13,9 @@ kubectl config set-context <cluster name> --user=nais-user --cluster=<cluster na
 ```
 6. Create definition and var files for new cluster in `./vars` and `./clusters` vars.yaml). See [examples][./examples]
 
-7. Create workflow for provisioning. See [examples](./examples/workflow.yaml)
+7. Create workflow for provisioning. See [examples](./examples/workflow.yaml), but add flag `--newCluster` when running provision:
+   `./nitro-linux provision --identity-file=${{ env.SSH_IDENTITY_FILE }} --cluster <cluster> --maxParallelism 1 --newCluster`
+   
 
 ### Add worker node to existing cluster
 1. Create a new node

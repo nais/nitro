@@ -77,7 +77,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 	if role == "etcd" && !newCluster {
 		counter := 0
 		for !EtcdHealthy(node, sshClient) {
-			if counter < 5 {
+			if counter < 20 {
 				counter++
 				log.Infof("etcd not healthy, sleeping for 5 seconds before rechecking")
 				time.Sleep(5 * time.Second)
