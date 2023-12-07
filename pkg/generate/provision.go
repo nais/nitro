@@ -15,7 +15,7 @@ import (
 	"github.com/sourcegraph/conc/pool"
 )
 
-func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]string, skipDrain bool, maxConcurrency int) {
+func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]string, skipDrain bool, newCluster bool, maxConcurrency int) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
@@ -34,11 +34,11 @@ func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]str
 					nodeCount--
 				}
 				wg.Go(func(ctx context.Context) error {
-					provision(ctx, role, node, k, sshClient, skipDrain)
+					provision(ctx, role, node, k, sshClient, skipDrain, newCluster)
 					return nil
 				})
 			} else {
-				provision(ctx, role, node, k, sshClient, skipDrain)
+				provision(ctx, role, node, k, sshClient, skipDrain, newCluster)
 			}
 		}
 	}
@@ -48,7 +48,7 @@ func Provision(sshClient *ssh.Client, clusterName string, nodes map[string][]str
 	}
 }
 
-func provision(ctx context.Context, role, node string, k *kubernetes.Client, sshClient *ssh.Client, skipDrain bool) {
+func provision(ctx context.Context, role, node string, k *kubernetes.Client, sshClient *ssh.Client, skipDrain bool, newCluster bool) {
 	start := time.Now()
 	ctx = kubernetes.WithName(ctx, node)
 	log := log.WithField("node", node)
@@ -74,7 +74,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 		log.WithError(err).Info("start reboot")
 	}
 
-	if role == "etcd" {
+	if role == "etcd" && newCluster {
 		counter := 0
 		for !EtcdHealthy(node, sshClient) {
 			if counter < 5 {

@@ -25,6 +25,7 @@ var cfg struct {
 	hosts          []string
 	skipDrain      bool
 	maxParallelism int
+	newCluster     bool
 }
 
 func getSupportedCommands() []string {
@@ -38,6 +39,7 @@ func init() {
 	flag.StringVar(&cfg.user, "user", "deployer", "user to use for ssh")
 	flag.BoolVar(&cfg.skipDrain, "skipDrain", false, "run without setting NoExecute taint and NoSchedule on nodes")
 	flag.IntVar(&cfg.maxParallelism, "maxParallelism", 2, "max number of parallel nodes for provisioning")
+	flag.BoolVar(&cfg.newCluster, "newCluster", false, "first time setup of cluster")
 }
 
 func main() {
@@ -88,7 +90,7 @@ func main() {
 			os.Exit(0)
 		}
 
-		generate.Provision(sshClient, cfg.cluster, hosts, cfg.skipDrain, cfg.maxParallelism)
+		generate.Provision(sshClient, cfg.cluster, hosts, cfg.skipDrain, cfg.newCluster, cfg.maxParallelism)
 	}
 }
 
