@@ -106,8 +106,9 @@ func (c *Client) nodePods(ctx context.Context, nodeName string) []corev1.Pod {
 
 func (c *Client) getNodes(ctx context.Context) []corev1.Node {
 	var nodes []corev1.Node
+	timeoutSeconds := int64(2)
 	retry(ctx, 5, func() error {
-		resp, err := c.k.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
+		resp, err := c.k.CoreV1().Nodes().List(ctx, metav1.ListOptions{TimeoutSeconds: &timeoutSeconds})
 		if err != nil {
 			return err
 		}
