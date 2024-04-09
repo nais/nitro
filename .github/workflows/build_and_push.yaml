@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'README.md'
+      - "README.md"
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
           git push -f --tags
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.20"
+          go-version: "1.22"
       - name: Create nitro binaries
         run: |
           make release-linux

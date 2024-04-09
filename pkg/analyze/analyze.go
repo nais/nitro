@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/flatcar-linux/ignition/config/v2_3/types"
+	"github.com/flatcar/ignition/config/v2_3/types"
 	"github.com/nais/onprem/nitro/pkg/ssh"
 	"github.com/r3labs/diff/v2"
 	log "github.com/sirupsen/logrus"

@@ -8,7 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/flatcar-linux/container-linux-config-transpiler/config"
+	"github.com/flatcar/container-linux-config-transpiler/config"
 )
 
 func init() {
