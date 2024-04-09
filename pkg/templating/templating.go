@@ -28,7 +28,7 @@ func templateFile(dst, src string, vars map[string]string) error {
 	defer func(output *os.File) {
 		err := output.Close()
 		if err != nil {
-			log.WithError(err).Fatal("close file %s", output.Name())
+			log.WithError(err).Fatalf("close file %s", output.Name())
 		}
 	}(output)
 
