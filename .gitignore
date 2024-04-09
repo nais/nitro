@@ -22,5 +22,5 @@ go.work
 
 # Idea
 .idea
-bin/nitro-*
+bin
 examples/output
