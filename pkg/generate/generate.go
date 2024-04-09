@@ -31,6 +31,8 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	clusterWithLocation := vars.ParseClusterYAML("clusters/" + cluster + ".yaml")
 
 	variables := vars.ParseVars(cluster, sshClient.IdentityFile(), clusterFile)
+	variables["hosts"] = utils.GenerateHosts(clusterWithLocation)
+
 	templating.TemplateFiles("templates", "output", variables, false)
 	for role, roleNodes := range clusterWithLocation {
 		for _, node := range roleNodes {
@@ -121,6 +123,7 @@ func search(file string, s string) (hits []int) {
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
+			log.WithError(err).Fatal("closing file")
 		}
 	}(f)
 
