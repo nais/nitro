@@ -11,8 +11,8 @@ all: install release-all
 release-all: release-linux
 
 install:
-	go build -o ../nitro-cluster -ldflags="-s -w $(LDFLAGS)" "cmd/provision/main.go"
-	go build -o ../nitro-runner -ldflags="-s -w $(LDFLAGS)" "cmd/provision/runner/main.go"
+	go build -o ./bin/nitro-cluster -ldflags="-s -w $(LDFLAGS)" "cmd/provision/main.go"
+	go build -o ./bin/nitro-runner -ldflags="-s -w $(LDFLAGS)" "cmd/provision/runner/main.go"
 
 release-linux:
 	GOOS=linux \
