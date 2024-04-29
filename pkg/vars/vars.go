@@ -45,6 +45,7 @@ func resolveRuntimeVars(hosts map[string][]string) map[string]string {
 	vars["worker_ips"] = strings.Join(noProxyIPs, ",")
 	vars["etcd_hostnames"] = strings.Join(hosts["etcd"], "\",\n\"")
 	vars["etcd_ips"] = strings.Join(etcdIPList, "\",\n\"")
+	vars["etcd_ips_no_proxy"] = strings.Join(etcdIPList, ",")
 	vars["etcd_initial_cluster"] = strings.Join(etcdInitialCluster, ",")
 	vars["etcd_urls"] = strings.Join(etcdUrls, ",")
 
