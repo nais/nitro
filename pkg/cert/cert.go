@@ -6,13 +6,13 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func writeCertificate(filePath string, cmd *exec.Cmd) error {
@@ -114,12 +114,12 @@ func GenerateKeyPair(outputDir, name string, bitSize int) {
 	)
 
 	// Write private key to file.
-	if err := ioutil.WriteFile(filepath.Join(outputDir, name+".key"), keyPEM, 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(outputDir, name+".key"), keyPEM, 0600); err != nil {
 		log.WithError(err).Fatalf("writing private key %s to file", name)
 	}
 
 	// Write public key to file.
-	if err := ioutil.WriteFile(filepath.Join(outputDir, name+".pub"), pubPEM, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(outputDir, name+".pub"), pubPEM, 0644); err != nil {
 		log.WithError(err).Fatalf("writing public key %s to file", name)
 	}
 
