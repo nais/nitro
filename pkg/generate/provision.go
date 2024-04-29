@@ -11,6 +11,7 @@ import (
 
 	"github.com/nais/onprem/nitro/pkg/kubernetes"
 	"github.com/nais/onprem/nitro/pkg/ssh"
+	"github.com/nais/onprem/nitro/pkg/vars"
 	log "github.com/sirupsen/logrus"
 	"github.com/sourcegraph/conc/pool"
 )
@@ -76,7 +77,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 
 	if role == "etcd" && !newCluster {
 		counter := 0
-		for !EtcdHealthy(node, sshClient) {
+		for !EtcdHealthy(vars.ResolveIP(node), sshClient) {
 			if counter < 20 {
 				counter++
 				log.Infof("etcd not healthy, sleeping for 5 seconds before rechecking")
