@@ -30,9 +30,9 @@ func resolveRuntimeVars(hosts map[string][]string) map[string]string {
 	var etcdUrls []string
 	var etcdInitialCluster []string
 	for _, etcdUrl := range hosts["etcd"] {
-		etcdUrls = append(etcdUrls, "https://"+etcdUrl+":2379")
 		etcdServerShort := strings.Split(etcdUrl, ".")[0]
 		ip := ResolveIP(etcdUrl)
+		etcdUrls = append(etcdUrls, "https://"+ip+":2379")
 
 		etcdIPList = append(etcdIPList, ip)
 		shortString := fmt.Sprintf("%s=https://%s:2380", etcdServerShort, ip)
