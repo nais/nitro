@@ -53,7 +53,7 @@ func (c *Client) UploadFile(host, src, dst string) error {
 func (c *Client) Reboot(host string) error {
 	err := c.ExecuteCommand(host, "sudo systemctl reboot")
 	if err != nil {
-		if "wait: remote command exited without exit status or exit signal" == err.Error() {
+		if err.Error() == "wait: remote command exited without exit status or exit signal" {
 			return nil
 		}
 		return err
