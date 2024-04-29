@@ -31,7 +31,7 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	clusterWithLocation := vars.ParseClusterYAML("clusters/" + cluster + ".yaml")
 
 	variables := vars.ParseVars(cluster, sshClient.IdentityFile(), clusterFile)
-	variables["hosts"] = utils.GenerateHosts(clusterWithLocation)
+	variables["hosts"] = utils.GenerateHosts(clusterWithLocation, nil)
 
 	templating.TemplateFiles("templates", "output", variables, false)
 	for role, roleNodes := range clusterWithLocation {

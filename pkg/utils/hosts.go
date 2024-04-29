@@ -1,16 +1,32 @@
 package utils
 
-import "github.com/nais/onprem/nitro/pkg/vars"
+import (
+	"sort"
 
-func GenerateHosts(clusterWithLocation map[string][]vars.Node) string {
-	retVal := ""
+	"github.com/nais/onprem/nitro/pkg/vars"
+)
+
+func GenerateHosts(clusterWithLocation map[string][]vars.Node, resolveIp func(string) string) string {
+	if resolveIp == nil {
+		resolveIp = vars.ResolveIP
+	}
+
+	var hostnames []string
+
 	for _, nodes := range clusterWithLocation {
 		for _, node := range nodes {
 			if node.Location == "azure" {
-				ip := vars.ResolveIP(node.Hostname)
-				retVal += ip + " " + node.Hostname + "\n"
+				hostnames = append(hostnames, node.Hostname)
 			}
 		}
 	}
-	return retVal
+
+	sort.Strings(hostnames)
+
+	sortedRetVal := ""
+	for _, hostname := range hostnames {
+		sortedRetVal += resolveIp(hostname) + " " + hostname + "\n"
+	}
+
+	return sortedRetVal
 }
