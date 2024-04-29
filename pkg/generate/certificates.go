@@ -3,6 +3,7 @@ package generate
 import (
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/nais/onprem/nitro/pkg/cert"
@@ -31,6 +32,8 @@ func ensureKubeletCert(hostname, caDir string, ssh *ssh.Client) {
 }
 
 func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
+	needNewCerts := certHasAllNodeNames(hosts, "server", apiServerDir)
+
 	for _, host := range hosts {
 		workingDir := "output/" + host
 		if err := ssh.DownloadDir(host, apiServerDir, "/etc/ssl/etcd/"); err != nil {
@@ -41,14 +44,33 @@ func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
 		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "peer-"+shortname, "peer")
 		}
-		if !utils.CertificatePairExists("server", apiServerDir) {
+		if !utils.CertificatePairExists("server", apiServerDir) && !needNewCerts {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "server", "server")
 		}
-		if !utils.CertificatePairExists("etcd-client", apiServerDir) {
+		if !utils.CertificatePairExists("etcd-client", apiServerDir) && !needNewCerts {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "etcd-client", "client")
 		}
 		log.Infof("ensured certs for etcd node %s", host)
 	}
+}
+
+func certHasAllNodeNames(hosts []string, name, apiServerDir string) bool {
+	// Retrieve X509v3 Subject Alternative Name from certificate
+	// Check if all nodes are present in SAN
+	certName := fmt.Sprintf("%s/%s.pem", apiServerDir, name)
+	dns, _, err := cert.GetSubjectAlternativeNames(certName)
+	if err != nil {
+		log.WithError(err).Fatalf("could not get SAN from %s", certName)
+	}
+
+	for _, host := range hosts {
+		if !slices.Contains(dns, host) {
+			log.Infof("host %s not in SAN of %s", host, certName)
+			return false
+		}
+	}
+
+	return true
 }
 
 func ensureApiserverCerts(hostname string, ssh *ssh.Client) {

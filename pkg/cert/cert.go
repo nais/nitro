@@ -5,12 +5,14 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
+	"net"
+	"os"
 	"os/exec"
 	"path/filepath"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func writeCertificate(filePath string, cmd *exec.Cmd) error {
@@ -122,4 +124,26 @@ func GenerateKeyPair(outputDir, name string, bitSize int) {
 	}
 
 	log.Infof("generated keypair: %s/%s.{pub,key}", outputDir, name)
+}
+
+func GetSubjectAlternativeNames(certName string) ([]string, []net.IP, error) {
+	certFile, err := os.ReadFile(certName)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error reading certificate file: %s", err)
+	}
+
+	// Decode the PEM encoded certificate
+	block, _ := pem.Decode(certFile)
+	if block == nil {
+		fmt.Println("Error decoding certificate PEM")
+		return nil, nil, fmt.Errorf("error decoding certificate PEM: %s", err)
+	}
+
+	// Parse the certificate
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error parsing certificate: %s", err)
+	}
+
+	return cert.DNSNames, cert.IPAddresses, nil
 }

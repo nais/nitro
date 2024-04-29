@@ -50,6 +50,7 @@ require (
 require (
 	github.com/flatcar/ignition v0.36.2
 	github.com/sourcegraph/conc v0.3.0
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -64,6 +65,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 )
