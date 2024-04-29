@@ -19,3 +19,17 @@ release-linux:
 	GOARCH=amd64 \
 	CGO_ENABLED=0 \
 	go build -o nitro-linux -ldflags="-s -w $(LDFLAGS)" "cmd/provision/main.go"
+
+check: staticcheck vulncheck deadcode
+
+staticcheck:
+	go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+
+vulncheck:
+	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+deadcode:
+	go run golang.org/x/tools/cmd/deadcode@latest -test ./...
+
+fmt:
+	go run mvdan.cc/gofumpt@latest -w ./
