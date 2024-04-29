@@ -32,13 +32,14 @@ func ensureKubeletCert(hostname, caDir string, ssh *ssh.Client) {
 }
 
 func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
-	needNewCerts := certHasAllNodeNames(hosts, "server", apiServerDir)
 
 	for _, host := range hosts {
 		workingDir := "output/" + host
 		if err := ssh.DownloadDir(host, apiServerDir, "/etc/ssl/etcd/"); err != nil {
 			log.Infof("could not download files from apiserver: %v", err)
 		}
+
+		needNewCerts := certHasAllNodeNames(hosts, "server", apiServerDir)
 
 		shortname := strings.Split(host, ".")[0]
 		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) {
