@@ -39,7 +39,7 @@ func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
 			log.Infof("could not download files from apiserver: %v", err)
 		}
 
-		allHostsInCert := certHasAllNodeNames(hosts, "server", apiServerDir)
+		allHostsInCert := verifySubjectAltNames(hosts, "server", apiServerDir)
 
 		shortname := strings.Split(host, ".")[0]
 		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) || !allHostsInCert {
@@ -55,13 +55,18 @@ func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
 	}
 }
 
-func certHasAllNodeNames(hosts []string, name, apiServerDir string) bool {
+func verifySubjectAltNames(hosts []string, name, apiServerDir string) bool {
 	// Retrieve X509v3 Subject Alternative Name from certificate
 	// Check if all nodes are present in SAN
 	certName := fmt.Sprintf("%s/%s.pem", apiServerDir, name)
 	dns, _, err := cert.GetSubjectAlternativeNames(certName)
 	if err != nil {
 		log.WithError(err).Fatalf("could not get SAN from %s", certName)
+	}
+
+	if len(dns) != len(hosts) {
+		log.Infof("SAN of %s does not contain all nodes", certName)
+		return false
 	}
 
 	for _, host := range hosts {
