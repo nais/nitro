@@ -10,6 +10,14 @@ all: install release-all
 
 release-all: release-linux
 
+check: staticcheck vulncheck deadcode
+
+deadcode:
+	go run golang.org/x/tools/cmd/deadcode@latest -test ./...
+
+fmt:
+	go run mvdan.cc/gofumpt@latest -w ./
+
 install:
 	go build -o ./bin/nitro-cluster -ldflags="-s -w $(LDFLAGS)" "cmd/provision/main.go"
 	go build -o ./bin/nitro-runner -ldflags="-s -w $(LDFLAGS)" "cmd/provision/runner/main.go"
@@ -20,16 +28,12 @@ release-linux:
 	CGO_ENABLED=0 \
 	go build -o nitro-linux -ldflags="-s -w $(LDFLAGS)" "cmd/provision/main.go"
 
-check: staticcheck vulncheck deadcode
-
 staticcheck:
 	go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+
+test: 
+	go test ./...
 
 vulncheck:
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
-deadcode:
-	go run golang.org/x/tools/cmd/deadcode@latest -test ./...
-
-fmt:
-	go run mvdan.cc/gofumpt@latest -w ./

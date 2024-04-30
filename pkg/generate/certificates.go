@@ -42,7 +42,7 @@ func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
 		needNewCerts := certHasAllNodeNames(hosts, "server", apiServerDir)
 
 		shortname := strings.Split(host, ".")[0]
-		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) {
+		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) && !needNewCerts {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "peer-"+shortname, "peer")
 		}
 		if !utils.CertificatePairExists("server", apiServerDir) && !needNewCerts {

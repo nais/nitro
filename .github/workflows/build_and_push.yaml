@@ -12,20 +12,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Force create tag
+
+      - name: create tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git remote set-url origin "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git tag -f $(cat .github/workflows/version)
           git push -f --tags
+
       - uses: actions/setup-go@v5
         with:
           go-version: "1.22"
-      - name: Create nitro binaries
+
+      - name: code verification
+        run: |
+          make check && make test
+
+      - name: create nitro binaries
         run: |
           make release-linux
-      - name: Delete release if exists
+
+      - name: delete release if exists
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -35,7 +43,8 @@ jobs:
             release_id=$(echo $latest | jq .id)
             curl -X DELETE https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@api.github.com/repos/${GITHUB_REPOSITORY}/releases/${release_id}
           fi
-      - name: Create Release
+
+      - name: create release
         env:
           BINARY: "nitro-linux"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
