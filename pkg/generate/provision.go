@@ -78,7 +78,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 	if role == "etcd" && !newCluster {
 		counter := 0
 		for !EtcdHealthy(vars.ResolveIP(node), sshClient) {
-			if counter < 100 {
+			if counter < 30 {
 				counter++
 				log.Infof("etcd not healthy, sleeping for 5 seconds before rechecking")
 				time.Sleep(5 * time.Second)
@@ -116,6 +116,6 @@ func EtcdHealthy(host string, client *ssh.Client) bool {
 	if err != nil {
 		log.WithError(err).Info("etcd health check failed")
 	}
-	log.Infof("retVal for etcdHealthy: %v", retVal)
+
 	return strings.Contains(retVal, "is healthy")
 }
