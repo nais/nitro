@@ -39,16 +39,14 @@ func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
 			log.Infof("could not download files from apiserver: %v", err)
 		}
 
-		allHostsInCert := verifySubjectAltNames(hosts, "server", apiServerDir)
-
 		shortname := strings.Split(host, ".")[0]
-		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) || !allHostsInCert {
+		if !utils.CertificatePairExists("peer-"+shortname, apiServerDir) || !verifySubjectAltNames(hosts, "server", apiServerDir) {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "peer-"+shortname, "peer")
 		}
-		if !utils.CertificatePairExists("server", apiServerDir) || !allHostsInCert {
+		if !utils.CertificatePairExists("server", apiServerDir) || !verifySubjectAltNames(hosts, "server", apiServerDir) {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "server", "server")
 		}
-		if !utils.CertificatePairExists("etcd-client", apiServerDir) || !allHostsInCert {
+		if !utils.CertificatePairExists("etcd-client", apiServerDir) || !verifySubjectAltNames(hosts, "server", apiServerDir) {
 			cert.GenerateCertWithConfig(workingDir+"/etcd-csr.json", workingDir+"/ca-config.json", apiServerDir+"/ca.pem", apiServerDir+"/ca-key.pem", apiServerDir, "etcd-client", "client")
 		}
 		log.Infof("ensured certs for etcd node %s", host)
