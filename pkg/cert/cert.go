@@ -18,50 +18,42 @@ import (
 func writeCertificate(filePath string, cmd *exec.Cmd) error {
 	reader, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Infof("error creating stdout pipe: %s", err)
 		return err
 	}
 
 	err = cmd.Start()
 	if err != nil {
-		log.Infof("error starting command: %s", err)
 		return err
 	}
 
 	certPem := exec.Command("cfssljson", "-bare", filePath)
 	writer, err := certPem.StdinPipe()
 	if err != nil {
-		log.Infof("error creating stdin pipe: %s", err)
 		return err
 	}
 
 	err = certPem.Start()
 	if err != nil {
-		log.Infof("error starting command: %s", err)
 		return err
 	}
 
 	_, err = io.Copy(writer, reader)
 	if err != nil {
-		log.Infof("error copying data: %s", err)
 		return err
 	}
 
 	err = writer.Close()
 	if err != nil {
-		log.Infof("error closing writer: %s", err)
 		return err
 	}
 
 	err = cmd.Wait()
 	if err != nil {
-		log.Infof("error waiting for command: %s", err)
 		return err
 	}
 
 	err = certPem.Wait()
 	if err != nil {
-		log.Infof("error waiting for command: %s", err)
 		return err
 	}
 	return nil
