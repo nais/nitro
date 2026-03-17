@@ -9,13 +9,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/nais/onprem/nitro/pkg/ssh"
 	"github.com/nais/onprem/nitro/pkg/templating"
 	"github.com/nais/onprem/nitro/pkg/transpile"
 	"github.com/nais/onprem/nitro/pkg/utils"
 	"github.com/nais/onprem/nitro/pkg/vars"
+	log "github.com/sirupsen/logrus"
 )
 
 const OutputDir = "./output"
@@ -49,10 +48,6 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 			}
 
 			templateDir := role
-			if role == "prometheus" {
-				templateDir = "worker"
-			}
-
 			templating.TemplateFiles(path.Join("templates", templateDir), nodeDir, variables, true)
 		}
 	}
@@ -61,7 +56,8 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	if hits := recursiveGrep("./output", "<no value>"); hits != nil {
 		log.Errorf("found %d unresolved variables:", len(hits))
 		for _, hit := range hits {
-			log.Errorf(hit)
+
+			log.Errorf("%s", hit)
 		}
 		os.Exit(1)
 	}
@@ -72,7 +68,7 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	apiServerHost := filtered["apiserver"][0]
 	caDir := "output/" + apiServerHost
 	ensureApiserverCerts(apiServerHost, sshClient)
-	ensureKubeletCerts(merge(filtered["worker"], filtered["prometheus"]), caDir, sshClient)
+	ensureKubeletCerts(filtered["worker"], caDir, sshClient)
 	ensureEtcdCerts(filtered["etcd"], caDir, sshClient)
 	log.Info("finished ensuring certificates")
 

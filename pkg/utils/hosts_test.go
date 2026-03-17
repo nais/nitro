@@ -22,8 +22,6 @@ func TestGenerateHosts(t *testing.T) {
 			{Hostname: "worker-ci-1", Location: "azure"},
 			{Hostname: "worker-ci-4", Location: "azure"},
 			{Hostname: "worker-ci-5", Location: "azure"},
-			{Hostname: "prometheus-ci-0", Location: "azure"},
-			{Hostname: "prometheus-ci-1", Location: "azure"},
 			{Hostname: "don-not-mind-me", Location: "not-azure"},
 		},
 	}
@@ -32,8 +30,6 @@ func TestGenerateHosts(t *testing.T) {
 10.0.0.1 etcd-ci-0
 10.0.0.1 etcd-ci-1
 10.0.0.1 etcd-ci-2
-10.0.0.1 prometheus-ci-0
-10.0.0.1 prometheus-ci-1
 10.0.0.1 worker-ci-0
 10.0.0.1 worker-ci-1
 10.0.0.1 worker-ci-4

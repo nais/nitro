@@ -24,7 +24,7 @@ func ParseVars(cluster, identity string, hosts map[string][]string) map[string]s
 }
 
 func resolveRuntimeVars(hosts map[string][]string) map[string]string {
-	noProxyIPs := resolveIPs(append(hosts["worker"], hosts["prometheus"]...))
+	noProxyIPs := resolveIPs(hosts["worker"])
 
 	var etcdIPList []string
 	var etcdUrls []string

@@ -88,7 +88,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 		}
 	}
 
-	if (role == "worker" || role == "prometheus") && !skipDrain {
+	if (role == "worker") && !skipDrain {
 		k.WaitForNode(ctx, node)
 		k.LabelNode(ctx, node, "kubernetes.io/role", role)
 	}
@@ -97,7 +97,7 @@ func provision(ctx context.Context, role, node string, k *kubernetes.Client, ssh
 }
 
 func roleOrder() []string {
-	return []string{"etcd", "apiserver", "worker", "prometheus"}
+	return []string{"etcd", "apiserver", "worker"}
 }
 
 func PrepareForReboot(host string, client *ssh.Client) error {
