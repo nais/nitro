@@ -82,13 +82,6 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	}
 }
 
-func merge(slices ...[]string) (ret []string) {
-	for _, s := range slices {
-		ret = append(ret, s...)
-	}
-	return ret
-}
-
 func recursiveGrep(root string, str string) []string {
 	var ret []string
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
