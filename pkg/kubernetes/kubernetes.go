@@ -51,7 +51,7 @@ func (c *Client) WaitForNode(ctx context.Context, nodeName string) {
 
 func (c *Client) LabelNode(ctx context.Context, nodeName, key, value string) bool {
 	log.WithField("node", nodeName).Infof("label node")
-	patch := []byte(fmt.Sprintf(`{"metadata":{"labels":{%q:%q}}}`, key, value))
+	patch := fmt.Appendf(nil, `{"metadata":{"labels":{%q:%q}}}`, key, value)
 	retry(ctx, 2, func() error {
 		_, err := c.k.CoreV1().Nodes().Patch(ctx, nodeName, types.MergePatchType, patch, metav1.PatchOptions{})
 		return err

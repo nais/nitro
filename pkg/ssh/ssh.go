@@ -99,8 +99,8 @@ func (c *Client) DownloadDir(host, dstDir, srcDir string) error {
 		return err
 	}
 
-	files := strings.Split(out, "\n")
-	for _, file := range files {
+	files := strings.SplitSeq(out, "\n")
+	for file := range files {
 		srcFilePath := filepath.Join(srcDir, file)
 		dstFilePath := filepath.Join(dstDir, file)
 		if file == "" {

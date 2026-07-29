@@ -2,6 +2,7 @@ package vars
 
 import (
 	"fmt"
+	"maps"
 	"net"
 	"os"
 	"os/exec"
@@ -157,13 +158,9 @@ func BuildUsersString(users map[string]string) string {
 func Merge(base, override map[string]string) map[string]string {
 	ret := make(map[string]string)
 
-	for k, v := range base {
-		ret[k] = v
-	}
+	maps.Copy(ret, base)
 
-	for k, v := range override {
-		ret[k] = v
-	}
+	maps.Copy(ret, override)
 
 	return ret
 }

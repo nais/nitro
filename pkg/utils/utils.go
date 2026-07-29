@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 func Hostnames(clusterFile map[string][]string) (ret []string) {
@@ -30,11 +31,5 @@ func LocalFileExists(filePath string) bool {
 }
 
 func Contains(elem string, slice []string) bool {
-	for _, entry := range slice {
-		if entry == elem {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(slice, elem)
 }

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/nais/onprem/nitro/pkg/vars"
 )
@@ -23,10 +24,10 @@ func GenerateHosts(clusterWithLocation map[string][]vars.Node, resolveIp func(st
 
 	sort.Strings(hostnames)
 
-	sortedRetVal := ""
+	var sortedRetVal strings.Builder
 	for _, hostname := range hostnames {
-		sortedRetVal += resolveIp(hostname) + " " + hostname + "\n"
+		sortedRetVal.WriteString(resolveIp(hostname) + " " + hostname + "\n")
 	}
 
-	return sortedRetVal
+	return sortedRetVal.String()
 }
