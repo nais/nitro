@@ -56,7 +56,6 @@ func ClusterIgnitionFiles(sshClient *ssh.Client, cluster string, hosts []string)
 	if hits := recursiveGrep("./output", "<no value>"); hits != nil {
 		log.Errorf("found %d unresolved variables:", len(hits))
 		for _, hit := range hits {
-
 			log.Errorf("%s", hit)
 		}
 		os.Exit(1)

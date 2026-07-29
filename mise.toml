@@ -1,0 +1,57 @@
+[tools]
+go = "1.26"
+
+[tasks."check"]
+description = "Run all checks"
+run = "unset MISE_TASK_OUTPUT && mise run check:deadcode ::: check:gosec ::: check:staticcheck ::: check:vulncheck"
+
+[tasks."check:deadcode"]
+description = "Run deadcode"
+run = "go tool golang.org/x/tools/cmd/deadcode -test -tags integration_test ./..."
+
+[tasks."check:gosec"]
+description = "Run gosec"
+run = "go tool github.com/securego/gosec/v2/cmd/gosec --exclude-generated -terse ./..."
+
+[tasks."check:staticcheck"]
+description = "Run staticcheck"
+run = "go tool honnef.co/go/tools/cmd/staticcheck ./..."
+
+[tasks."check:vulncheck"]
+description = "Run vulncheck"
+run = "go tool golang.org/x/vuln/cmd/govulncheck ./..."
+
+[tasks."fmt"]
+description = "Format all code"
+run = "mise run fmt:go ::: fmt:gofix"
+
+[tasks."fmt:go"]
+description = "Format go code using gofumpt"
+run = "go tool mvdan.cc/gofumpt -w ./"
+
+[tasks."fmt:gofix"]
+description = "Fix runs the Go fix tool (cmd/fix) on the named packages and applies suggested fixes."
+run = "go fix ./..."
+
+[tasks."test"]
+description = "Test Go code"
+run = "go test ./..."
+
+[tasks."release-linux"]
+description = "Build Linux AMD64 release binary"
+run = """
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
+go build -o nitro-linux \
+  -ldflags="-s -w \
+    -X github.com/nais/onprem/nitro/pkg/version.Revision=$(git rev-parse --short HEAD) \
+    -X github.com/nais/onprem/nitro/pkg/version.Date=$(date '+%Y-%m-%d') \
+    -X github.com/nais/onprem/nitro/pkg/version.BuildUnixTime=$(date '+%s')" \
+  cmd/provision/main.go
+"""
+
+[tasks."update:tools"]
+description = "Update all Go tools to latest"
+run = """
+go list tool | xargs go get -tool
+go mod tidy
+"""

@@ -84,6 +84,7 @@ func GenerateCertWithConfig(csrPath, caConfig, caPublic, caKey, outputDir, name,
 	}
 	log.Infof("generated cert: %s/%s{,-key}.pem (%s)", outputDir, name, profile)
 }
+
 func GenerateCert(csrPath, caDir, outputDir, name, profile string) {
 	GenerateCertWithConfig(csrPath, caDir+"/ca-config.json", caDir+"/ca.pem", caDir+"/ca-key.pem", outputDir, name, profile)
 }
@@ -114,12 +115,12 @@ func GenerateKeyPair(outputDir, name string, bitSize int) {
 	)
 
 	// Write private key to file.
-	if err := os.WriteFile(filepath.Join(outputDir, name+".key"), keyPEM, 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(outputDir, name+".key"), keyPEM, 0o600); err != nil {
 		log.WithError(err).Fatalf("writing private key %s to file", name)
 	}
 
 	// Write public key to file.
-	if err := os.WriteFile(filepath.Join(outputDir, name+".pub"), pubPEM, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(outputDir, name+".pub"), pubPEM, 0o644); err != nil {
 		log.WithError(err).Fatalf("writing public key %s to file", name)
 	}
 

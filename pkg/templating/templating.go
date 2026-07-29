@@ -10,7 +10,7 @@ import (
 )
 
 func templateFile(dst, src string, vars map[string]string) error {
-	err := os.MkdirAll(filepath.Dir(dst), 0755)
+	err := os.MkdirAll(filepath.Dir(dst), 0o755)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,6 @@ func TemplateFiles(templateDir, outputDir string, vars map[string]string, recurs
 
 		return nil
 	})
-
 	if err != nil {
 		log.WithError(err).Fatal("walkdir")
 	}

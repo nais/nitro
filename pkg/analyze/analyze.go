@@ -56,11 +56,11 @@ func buildMarkdownTable(changelog diff.Changelog) string {
 	for _, change := range changelog {
 		switch change.Type {
 		case diff.DELETE:
-			stringBuilder.WriteString(fmt.Sprintf("| %s | %s | %s |\n", change.Type, strings.Join(change.Path, "."), change.From))
+			fmt.Fprintf(&stringBuilder, "| %s | %s | %s |\n", change.Type, strings.Join(change.Path, "."), change.From)
 		case diff.CREATE:
-			stringBuilder.WriteString(fmt.Sprintf("| %s | %s | %s |\n", change.Type, strings.Join(change.Path, "."), change.To))
+			fmt.Fprintf(&stringBuilder, "| %s | %s | %s |\n", change.Type, strings.Join(change.Path, "."), change.To)
 		default:
-			stringBuilder.WriteString(fmt.Sprintf("| %s | %s | %s |\n| | | %s |\n", change.Type, strings.Join(change.Path, "."), change.From, change.To))
+			fmt.Fprintf(&stringBuilder, "| %s | %s | %s |\n| | | %s |\n", change.Type, strings.Join(change.Path, "."), change.From, change.To)
 		}
 	}
 	return stringBuilder.String()

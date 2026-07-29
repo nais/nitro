@@ -24,17 +24,15 @@ jobs:
           git tag -f $(cat .github/workflows/version)
           git push -f --tags
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.26"
+      - uses: jdx/mise-action@v2
 
       - name: code verification
         run: |
-          make check && make test
+          mise run check && mise run test
 
       - name: create nitro binaries
         run: |
-          make release-linux
+          mise run release-linux
 
       - name: delete release if exists
         env:

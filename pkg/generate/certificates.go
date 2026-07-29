@@ -32,7 +32,6 @@ func ensureKubeletCert(hostname, caDir string, ssh *ssh.Client) {
 }
 
 func ensureEtcdCerts(hosts []string, apiServerDir string, ssh *ssh.Client) {
-
 	for _, host := range hosts {
 		workingDir := "output/" + host
 		if err := ssh.DownloadDir(host, apiServerDir, "/etc/ssl/etcd/"); err != nil {
