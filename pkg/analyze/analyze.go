@@ -67,7 +67,7 @@ func buildMarkdownTable(changelog diff.Changelog) string {
 }
 
 func readFileBytes(filePath string) []byte {
-	file, err := os.Open(filePath)
+	file, err := os.Open(filePath) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatal("open file")
 	}

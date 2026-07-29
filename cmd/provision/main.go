@@ -76,7 +76,7 @@ func main() {
 			}
 		}
 		diffBytes := []byte(strings.Join(changes, ""))
-		err := os.WriteFile("output/analysis.out", diffBytes, 0o644)
+		err := os.WriteFile("output/analysis.out", diffBytes, 0o600)
 		if err != nil {
 			log.WithError(err).Fatal("write analysis.out")
 		}
@@ -126,7 +126,7 @@ func calculateHosts(clusterFile map[string][]string, sshClient *ssh.Client, outp
 }
 
 func sha256sum(path string) string {
-	f, err := os.Open(path)
+	f, err := os.Open(path) //#nosec G304
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -146,7 +146,7 @@ func sha256sum(path string) string {
 }
 
 func setupLogging() {
-	file, err := os.OpenFile("nitro.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o666)
+	file, err := os.OpenFile("nitro.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
 		fmt.Println("Could Not Open Log File : " + err.Error())
 	}

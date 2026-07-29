@@ -104,7 +104,7 @@ func recursiveGrep(root string, str string) []string {
 }
 
 func search(file string, s string) (hits []int) {
-	f, err := os.Open(file)
+	f, err := os.Open(file) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatal("opening file")
 	}

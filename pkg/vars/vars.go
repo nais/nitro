@@ -55,7 +55,7 @@ func resolveRuntimeVars(hosts map[string][]string) map[string]string {
 }
 
 func ParseStringYAML(file string) map[string]string {
-	f, err := os.ReadFile(file)
+	f, err := os.ReadFile(file) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatalf("reading yaml file: %s", file)
 	}
@@ -70,7 +70,7 @@ func ParseStringYAML(file string) map[string]string {
 }
 
 func ParseSliceYAML(file string) map[string][]string {
-	f, err := os.ReadFile(file)
+	f, err := os.ReadFile(file) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatalf("reading yaml file: %s", file)
 	}
@@ -97,7 +97,7 @@ type Node struct {
 }
 
 func ParseClusterYAML(file string) map[string][]Node {
-	f, err := os.ReadFile(file)
+	f, err := os.ReadFile(file) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatalf("reading yaml file: %s", file)
 	}
@@ -123,7 +123,7 @@ func resolveIPs(hostnames []string) []string {
 func ResolveIP(hostname string) string {
 	// Resolves DNS through aura jumphost
 	if os.Getenv("JUMPHOST_DNS") != "" {
-		out, err := exec.Command("/usr/bin/ssh", "aura", "dig +short "+hostname).Output()
+		out, err := exec.Command("/usr/bin/ssh", "aura", "dig +short "+hostname).Output() //#nosec G204
 		if err != nil {
 			log.WithError(err).Fatalf("resolving ip for %s", hostname)
 		}

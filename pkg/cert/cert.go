@@ -26,7 +26,7 @@ func writeCertificate(filePath string, cmd *exec.Cmd) error {
 		return err
 	}
 
-	certPem := exec.Command("cfssljson", "-bare", filePath)
+	certPem := exec.Command("cfssljson", "-bare", filePath) //#nosec G204
 	writer, err := certPem.StdinPipe()
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func writeCertificate(filePath string, cmd *exec.Cmd) error {
 }
 
 func GenerateCaCert(outputDir, csrPath, name string) {
-	cmd := exec.Command("cfssl", "gencert", "-initca", csrPath)
+	cmd := exec.Command("cfssl", "gencert", "-initca", csrPath) //#nosec G204
 
 	err := writeCertificate(filepath.Join(outputDir, name), cmd)
 	if err != nil {
@@ -70,7 +70,7 @@ func GenerateCaCert(outputDir, csrPath, name string) {
 }
 
 func GenerateCertWithConfig(csrPath, caConfig, caPublic, caKey, outputDir, name, profile string) {
-	cmd := exec.Command("cfssl",
+	cmd := exec.Command("cfssl", //#nosec G204
 		"gencert",
 		"-ca="+caPublic,
 		"-ca-key="+caKey,
@@ -120,7 +120,7 @@ func GenerateKeyPair(outputDir, name string, bitSize int) {
 	}
 
 	// Write public key to file.
-	if err := os.WriteFile(filepath.Join(outputDir, name+".pub"), pubPEM, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(outputDir, name+".pub"), pubPEM, 0o600); err != nil {
 		log.WithError(err).Fatalf("writing public key %s to file", name)
 	}
 
@@ -128,7 +128,7 @@ func GenerateKeyPair(outputDir, name string, bitSize int) {
 }
 
 func GetSubjectAlternativeNames(certName string) ([]string, []net.IP, error) {
-	certFile, err := os.ReadFile(certName)
+	certFile, err := os.ReadFile(certName) //#nosec G304
 	if err != nil {
 		return nil, nil, fmt.Errorf("error reading certificate file: %s", err)
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func templateFile(dst, src string, vars map[string]string) error {
-	err := os.MkdirAll(filepath.Dir(dst), 0o755)
+	err := os.MkdirAll(filepath.Dir(dst), 0o750)
 	if err != nil {
 		return err
 	}
@@ -20,7 +20,7 @@ func templateFile(dst, src string, vars map[string]string) error {
 		return err
 	}
 
-	output, err := os.Create(dst)
+	output, err := os.Create(dst) //#nosec G304
 	if err != nil {
 		return err
 	}

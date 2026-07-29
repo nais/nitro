@@ -16,7 +16,7 @@ func init() {
 }
 
 func Run(src, dst, configDir string) {
-	inFile, err := os.Open(src)
+	inFile, err := os.Open(src) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatal("opening ignition file")
 	}
@@ -52,7 +52,7 @@ func Run(src, dst, configDir string) {
 		log.WithError(err).Fatalf("failed to marshal output: %v", err)
 	}
 
-	outFile, err := os.Create(dst)
+	outFile, err := os.Create(dst) //#nosec G304
 	if err != nil {
 		log.WithError(err).Fatalf("failed to create: %v", err)
 	}
